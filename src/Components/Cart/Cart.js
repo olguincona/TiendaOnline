@@ -27,7 +27,7 @@ const Cart = () => {
           setIdVenta(result.id)
         })
     
-        const updateCollection = doc(db, "productos","S5K3OHXUmjlcye7tzKef");
+        const updateCollection = doc(db, "productos",product.idVenta);
         updateDoc(updateCollection,[product.stock-product.qty])
       }
 

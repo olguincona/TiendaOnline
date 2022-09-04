@@ -1,42 +1,78 @@
 import React, {useState} from 'react'
 
-const ItemCount = ({stock, initial}) => {
+const ItemCount = ({stock, initial, onAdd}) => {
 
-    const [cuenta, setCuenta] = useState(initial)
+    const [count, setCount] = useState(initial)
 
     
 
     const sumar = () => {
-        if (cuenta < stock) {
-            setCuenta(cuenta + 1)
-        } if (cuenta >= stock) {
+        if (count < stock) {
+            setCount(count + 1)
+        } if (count >= stock) {
             alert("Haz llegado al limite de stock")
         }
     }
 
     const restar = () => {
-        if (cuenta > initial) {
-            //setCuenta(cuenta - 1)
-            setCuenta(Math.max(cuenta - 1, 0))
+        if (count > initial) {
+            setCount(Math.max(count - 1, 0))
         }
     }
 
-    const onAdd = () => {
-        alert(`Gracias compraste ${cuenta} productos`)
+    const añadir = () => {
+        onAdd(count)
+        alert(`Gracias añadiste ${count} productos a tu carro`)
     }
     
 
 
   return (
-    <>
-        <div className='flex gap-6 py-6 px-10'>
-            <button className='text-xl' onClick={restar}>-</button>
-            <p className='text-xl font-bold'>{cuenta}</p>
-            <button className='text-xl' onClick={sumar}>+</button>
+        <div style={styles.container}>
+            <div style={styles.containerButtons}>
+                <button style={styles.button} onClick={() => restar()}>-</button>
+                <h2>{count}</h2>
+                <button style={styles.button} onClick={() => sumar()}>+</button>
+            </div>
+            <button style={styles.buttonAdd} onClick={() => añadir()}>Agregar al carrito</button>
         </div>
-        <button className='bg-black p-3 text-white mx-3' onClick={onAdd}>Añadir a la Cesta</button>
-    </>
-  )
+    );
+}
+
+const styles = {
+    container: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: '10px'
+    },
+    button: {
+        width: "40px",
+        height: "40px",
+        borderRadius: "50%",
+        backgroundColor: "black",
+        color: "white",
+        fontSize: "20px",
+        fontWeight: "bold",
+        margin: "10px",
+    },
+    containerButtons: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    buttonAdd: {
+        width: "30%",
+        height: "50px",
+        borderRadius: "50%",
+        backgroundColor: "grey",
+        color: "white",
+        fontSize: "20px",
+        fontWeight: "bold",
+    }
+
 }
 
 export default ItemCount

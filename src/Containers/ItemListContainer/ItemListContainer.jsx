@@ -1,44 +1,43 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
-import ItemCount from '../../Components/ItemCount/ItemCount'
+import CircularProgress from '@mui/material/CircularProgress';
+import ItemList from './ItemList';
+import { useParams } from 'react-router-dom';
+import { db } from "../../firebase/firebase";
+import { getDocs, collection, query, where } from "firebase/firestore"
 
-const ItemListContainer = ({ saludo, numero1, numero2 }) => {
+export const ItemListContainer = ({ saludo }) => {
   const[products, setProducts] = useState([]);
-  const[error, setError] = useState(false);
-  const[loading, setLoading] = useState(true);
+  const [loaded, setLoaded] = useState(true);
+
+  const { categoryId } = useParams();
 
   useEffect(() => {
-    /* fetch('https://fakestoreapi.com/products')
-        .then(res => res.json())
-        .then(data => setProducts(data))
-        .catch(err => console.log(err)) */
+    const q = categoryId
+        ? query(collection(db, 'productos'), where('category', '==', categoryId))
+        : collection(db, 'productos');
 
-      const getProducts = async () => {
-        try {
-            const response = await fetch('https://fakestoreapi.com/products');
-            const data = await response.json();
-            setProducts(data);
-        }
-        catch (err) {
-            console.log(err);
-            setError(true)
-        }
-        finally {
-            setLoading(false)
-        }
-      }
-      getProducts();
-  }, []);
+    getDocs(q)
+        .then(result => {
+            const lista = result.docs.map(doc => {
+                return {
+                    id: doc.id,
+                    ...doc.data(),
+                }
+            })
+            setProducts(lista);
+        })
+        .catch(err => console.log(err))
+        .finally(() => setLoaded(false))
 
-  return (
+}, [categoryId]);
+
+return (
     <>
-        <h1 className='text-3xl font-bold'>{saludo}</h1>
-        <ItemCount stock={5} initial={0}/>
-        {loading ? <p>Loading...</p>:
-          error ? <p>Error</p>:
-            <ul>{products.map(product => <li key={product.id}>{product.title}</li>)}</ul>}
+        <h1>{saludo}</h1>
+        {loaded ? <CircularProgress color="success" /> : <ItemList products={products} />}
     </>
-  )
+)
 }
 
 export default ItemListContainer
